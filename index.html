@@ -1,71 +1,140 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Проект "Комменты"</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
 
-  <body>
-    <div class="container">
-      <ul class="comments">
-        <li class="comment">
-          <div class="comment-header">
-            <div>Глеб Фокин</div>
-            <div>12.02.22 12:18</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              Это будет первый комментарий на этой странице
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">3</span>
-              <button class="like-button"></button>
-            </div>
-          </div>
-        </li>
-        <li class="comment">
-          <div class="comment-header">
-            <div>Варвара Н.</div>
-            <div>13.02.22 19:22</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              Мне нравится как оформлена эта страница! ❤
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">75</span>
-              <button class="like-button -active-like"></button>
-            </div>
-          </div>
-        </li>
-      </ul>
-      <div class="add-form">
-        <input
-          type="text"
-          class="add-form-name"
-          placeholder="Введите ваше имя"
-        />
-        <textarea
-          type="textarea"
-          class="add-form-text"
-          placeholder="Введите ваш коментарий"
-          rows="4"
-        ></textarea>
-        <div class="add-form-row">
-          <button class="add-form-button">Написать</button>
+<head>
+  <title>Проект "Комменты"</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="container">
+    <ul id="list" class="comments">
+      <li class="comment">
+        <div class="comment-header">
+          <div>Глеб Фокин</div>
+          <div>12.02.22 12:18</div>
         </div>
+        <div class="comment-body">
+          <div class="comment-text">
+            Это будет первый комментарий на этой странице
+          </div>
+        </div>
+        <div class="comment-footer">
+          <div class="likes">
+            <span class="likes-counter">3</span>
+            <button class="like-button"></button>
+          </div>
+        </div>
+      </li>
+      <li class="comment">
+        <div class="comment-header">
+          <div>Варвара Н.</div>
+          <div>13.02.22 19:22</div>
+        </div>
+        <div class="comment-body">
+          <div class="comment-text">
+            Мне нравится как оформлена эта страница! ❤
+          </div>
+        </div>
+        <div class="comment-footer">
+          <div class="likes">
+            <span class="likes-counter">75</span>
+            <button class="like-button -active-like"></button>
+          </div>
+        </div>
+      </li>
+    </ul>
+    <div class="add-form">
+      <input id="name" type="text" class="add-form-name" placeholder="Введите ваше имя" />
+      <textarea id="text" type="textarea" class="add-form-text" placeholder="Введите ваш коментарий"
+        rows="4"></textarea>
+      <div class="add-form-row">
+        <button id="add" class="add-form-button">Написать</button>
+        <button id="remove" class="add-form-button collor">Удалить последний комментарий</button>
       </div>
     </div>
-  </body>
+  </div>
+</body>
 
-  <script>
-    "use strict";
-    // Код писать здесь
-    console.log("It works!");
-  </script>
+<script>
+  "use strict";
+
+  // Находим элементы
+  const nameEl = document.getElementById('name');
+  const textEl = document.getElementById('text');
+  const addEl = document.getElementById('add');
+  const removeEl = document.getElementById('remove');
+  const listEl = document.getElementById('list');
+
+  // Функция для проверки полей и обновления состояния кнопки
+  function updateButtonState() {
+    // Проверяем, что оба поля не пустые
+    addEl.disabled = !nameEl.value.trim() || !textEl.value.trim();
+    addEl.style.backgroundColor = addEl.disabled ? "grey" : "";
+  }
+
+  // Функция для добавления комментария
+  function addComment() {
+
+    const oldListHtml = listEl.innerHTML;
+    const date = new Date();
+
+    // Форматируем дату
+    const formattedDate = date.toLocaleDateString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit'
+    });
+
+    // Форматируем время
+    const formattedTime = date.toLocaleTimeString('ru-RU', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false // Используем 24-часовой формат
+    });
+
+    // Добавляем элемент списка
+    listEl.innerHTML = oldListHtml + `<li class="comment"><div class="comment-header"><div>${nameEl.value}</div><div> ${formattedDate + ' ' + formattedTime} </div></div><div class="comment-body"><div class="comment-text">${textEl.value}</div></div><div class="comment-footer"><div class="likes"><span class="likes-counter">0</span><button class="like-button"></button></div></div></li>`
+    nameEl.value = '';
+    textEl.value = '';
+    updateButtonState();
+  }
+
+  // Функция удаления комментария
+  function removeLastComment() {
+      const lastComment = listEl.lastElementChild;
+      if (lastComment) {
+        listEl.removeChild(lastComment);
+      }
+    }
+
+
+  // Обработчик ввода
+  nameEl.addEventListener('input', updateButtonState);
+  textEl.addEventListener('input', updateButtonState);
+
+  // Обработчик для кнопки "Добавить"
+  addEl.addEventListener('click', addComment);
+
+  // Обработчик для кнопки "Удалить..."
+  removeEl.addEventListener('click', removeLastComment);
+
+  // Обработчик события keyup для поля ввода текста и имени
+  function handleKeyUp(event) {
+    if (event.keyCode === 13 && nameEl.value.trim() && textEl.value.trim()) {
+      addComment();
+    }
+  }
+
+  // Обработчик Enter
+  nameEl.addEventListener('keyup', handleKeyUp);
+  textEl.addEventListener('keyup', handleKeyUp);
+
+  // Инициализация состояния кнопки при загрузке страницы
+  updateButtonState();
+
+  console.log("It works!");
+</script>
+
 </html>

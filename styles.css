@@ -120,6 +120,7 @@ body {
   .add-form-row {
     display: flex;
     justify-content: flex-end;
+    gap: 32px;
   }
 
   .add-form-button {
@@ -130,6 +131,9 @@ body {
     border: none;
     border-radius: 18px;
     cursor: pointer;
+  }
+  .collor {
+    background-color: pink;
   }
 
   .add-form-button:hover {
