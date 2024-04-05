@@ -10,7 +10,7 @@
 <body>
   <div class="container">
     <ul id="list" class="comments">
-      <li class="comment">
+      <!-- <li class="comment">
         <div class="comment-header">
           <div>Глеб Фокин</div>
           <div>12.02.22 12:18</div>
@@ -43,7 +43,7 @@
             <button class="like-button -active-like"></button>
           </div>
         </div>
-      </li>
+      </li> -->
     </ul>
     <div class="add-form">
       <input id="name" type="text" class="add-form-name" placeholder="Введите ваше имя" />
@@ -66,6 +66,50 @@
   const addEl = document.getElementById('add');
   const removeEl = document.getElementById('remove');
   const listEl = document.getElementById('list');
+
+  // Переносим верстку в массив
+  const comments = [
+    {
+      name: "Глеб Фокин",
+      comment: "Это будет первый комментарий на этой странице",
+      time: "12.02.22 12:18",
+      numLikes: 3,
+      isLiked: false,
+    },
+    {
+      name: "Варвара Н.",
+      comment: "Мне нравится как оформлена эта страница! ❤",
+      time: "13.02.22 19:22",
+      numLikes: 75,
+      isLiked: true,
+    },
+  ]
+
+  // Рендерим массив
+  const renderComments = () => {
+    const commentsHtml = comments
+      .map((userComent, index) => {
+        return `<li class="comment">
+        <div class="comment-header">
+          <div>${userComent.name}</div>
+          <div> ${userComent.time} </div>
+        </div>
+        <div class="comment-body">
+          <div class="comment-text">${userComent.comment}</div>
+        </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">${userComent.numLikes}</span>
+              <button class="like-button ${userComent.isLiked ? "-active-like" : ""}"  data-index='${index}'></button>
+            </div>
+          </div>
+        </li>`
+      }).join("");
+
+    listEl.innerHTML = commentsHtml;
+  }
+
+  renderComments();
 
   // Функция для проверки полей и обновления состояния кнопки
   function updateButtonState() {
@@ -103,12 +147,11 @@
 
   // Функция удаления комментария
   function removeLastComment() {
-      const lastComment = listEl.lastElementChild;
-      if (lastComment) {
-        listEl.removeChild(lastComment);
-      }
+    const lastComment = listEl.lastElementChild;
+    if (lastComment) {
+      listEl.removeChild(lastComment);
     }
-
+  }
 
   // Обработчик ввода
   nameEl.addEventListener('input', updateButtonState);
