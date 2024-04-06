@@ -132,12 +132,12 @@
     updateButtonState();
   }
 
-  // Функция удаления комментария
+  // Функция удаления последнего комментария
   function removeLastComment() {
-    const lastComment = listEl.lastElementChild;
-    if (lastComment) {
-      listEl.removeChild(lastComment);
-    }
+    // Удаляем последний комментарий из массива
+    comments.pop();
+    // Перерисовываем список комментариев
+    renderComments();
   }
 
   // Обработчик ввода
