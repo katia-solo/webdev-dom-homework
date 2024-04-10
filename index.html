@@ -10,40 +10,7 @@
 <body>
   <div class="container">
     <ul id="list" class="comments">
-      <li class="comment">
-        <div class="comment-header">
-          <div>Глеб Фокин</div>
-          <div>12.02.22 12:18</div>
-        </div>
-        <div class="comment-body">
-          <div class="comment-text">
-            Это будет первый комментарий на этой странице
-          </div>
-        </div>
-        <div class="comment-footer">
-          <div class="likes">
-            <span class="likes-counter">3</span>
-            <button class="like-button"></button>
-          </div>
-        </div>
-      </li>
-      <li class="comment">
-        <div class="comment-header">
-          <div>Варвара Н.</div>
-          <div>13.02.22 19:22</div>
-        </div>
-        <div class="comment-body">
-          <div class="comment-text">
-            Мне нравится как оформлена эта страница! ❤
-          </div>
-        </div>
-        <div class="comment-footer">
-          <div class="likes">
-            <span class="likes-counter">75</span>
-            <button class="like-button -active-like"></button>
-          </div>
-        </div>
-      </li>
+      <!-- в js -->
     </ul>
     <div class="add-form">
       <input id="name" type="text" class="add-form-name" placeholder="Введите ваше имя" />
@@ -66,6 +33,65 @@
   const addEl = document.getElementById('add');
   const removeEl = document.getElementById('remove');
   const listEl = document.getElementById('list');
+
+  // Переносим верстку в массив
+  const comments = [
+    {
+      name: "Глеб Фокин",
+      comment: "Это будет первый комментарий на этой странице",
+      time: "12.02.22 12:18",
+      numLikes: 3,
+      isLiked: false,
+    },
+    {
+      name: "Варвара Н.",
+      comment: "Мне нравится как оформлена эта страница! ❤",
+      time: "13.02.22 19:22",
+      numLikes: 75,
+      isLiked: true,
+    },
+  ]
+
+  // Рендерим массив
+  const renderComments = () => {
+    const commentsHtml = comments
+      .map((userComment, index) => {
+        return `<li class="comment">
+        <div class="comment-header">
+          <div>${userComment.name}</div>
+          <div> ${userComment.time} </div>
+        </div>
+        <div class="comment-body">
+          <div class="comment-text">${userComment.comment}</div>
+        </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">${userComment.numLikes}</span>
+              <button class="like-button ${userComment.isLiked ? "-active-like" : ""}"  data-index='${index}'></button>
+            </div>
+          </div>
+        </li>`
+      }).join("");
+
+    listEl.innerHTML = commentsHtml;
+
+    // Обработчики событий добавляются сразу после обновления HTML
+    likesEvent();
+  }
+
+  // Учет лайков
+  const likesEvent = () => {
+    document.querySelectorAll('.like-button').forEach(button => {
+      button.onclick = function () {
+        const index = this.getAttribute('data-index');
+        comments[index].isLiked = !comments[index].isLiked;
+        comments[index].numLikes += comments[index].isLiked ? 1 : -1;
+        renderComments(); // Перерисовываем комментарии для обновления
+      };
+    });
+  }
+
+  renderComments();
 
   // Функция для проверки полей и обновления состояния кнопки
   function updateButtonState() {
@@ -95,20 +121,24 @@
     });
 
     // Добавляем элемент списка
-    listEl.innerHTML = oldListHtml + `<li class="comment"><div class="comment-header"><div>${nameEl.value}</div><div> ${formattedDate + ' ' + formattedTime} </div></div><div class="comment-body"><div class="comment-text">${textEl.value}</div></div><div class="comment-footer"><div class="likes"><span class="likes-counter">0</span><button class="like-button"></button></div></div></li>`
-    nameEl.value = '';
-    textEl.value = '';
+    comments.push({
+      name: nameEl.value,
+      comment: textEl.value,
+      time: formattedDate + formattedTime,
+      numLikes: 0,
+      isLiked: false,
+    });
+    renderComments();
     updateButtonState();
   }
 
-  // Функция удаления комментария
+  // Функция удаления последнего комментария
   function removeLastComment() {
-      const lastComment = listEl.lastElementChild;
-      if (lastComment) {
-        listEl.removeChild(lastComment);
-      }
-    }
-
+    // Удаляем последний комментарий из массива
+    comments.pop();
+    // Перерисовываем список комментариев
+    renderComments();
+  }
 
   // Обработчик ввода
   nameEl.addEventListener('input', updateButtonState);
