@@ -56,7 +56,7 @@
   const renderComments = () => {
     const commentsHtml = comments
       .map((userComment, index) => {
-        return `<li class="comment">
+        return `<li class="comment" data-index="${index}">
         <div class="comment-header">
           <div>${userComment.name}</div>
           <div> ${userComment.time} </div>
@@ -77,17 +77,28 @@
 
     // Обработчики событий добавляются сразу после обновления HTML
     likesEvent();
+
+    document.querySelectorAll('.comment').forEach(commentEl => {
+      commentEl.addEventListener('click', function () {
+        const index = this.getAttribute('data-index');
+        // nameEl.value = comments[index].name; // Заполняем поле ввода имени
+        textEl.value = `${comments[index].comment}\n\n${comments[index].name}, `; // Теперь заполняем поле ввода текстом комментария
+        updateButtonState(); // Обновляем состояние кнопки
+      });
+    });
   }
 
   // Учет лайков
   const likesEvent = () => {
     document.querySelectorAll('.like-button').forEach(button => {
-      button.onclick = function () {
+      button.addEventListener('click', function (event) {
+        event.stopPropagation(); // Предотвращаем всплытие события
+
         const index = this.getAttribute('data-index');
         comments[index].isLiked = !comments[index].isLiked;
         comments[index].numLikes += comments[index].isLiked ? 1 : -1;
         renderComments(); // Перерисовываем комментарии для обновления
-      };
+      });
     });
   }
 
