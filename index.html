@@ -81,7 +81,6 @@
     document.querySelectorAll('.comment').forEach(commentEl => {
       commentEl.addEventListener('click', function () {
         const index = this.getAttribute('data-index');
-        // nameEl.value = comments[index].name; // Заполняем поле ввода имени
         textEl.value = `${comments[index].comment}\n\n${comments[index].name}, `; // Теперь заполняем поле ввода текстом комментария
         updateButtonState(); // Обновляем состояние кнопки
       });
@@ -133,7 +132,11 @@
 
     // Добавляем элемент списка
     comments.push({
-      name: nameEl.value,
+      name: nameEl.value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;"),
       comment: textEl.value,
       time: formattedDate + formattedTime,
       numLikes: 0,
@@ -141,6 +144,9 @@
     });
     renderComments();
     updateButtonState();
+    // Очищаем поля ввода
+    nameEl.value = '';
+    textEl.value = '';
   }
 
   // Функция удаления последнего комментария
