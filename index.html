@@ -56,21 +56,25 @@
   const renderComments = () => {
     const commentsHtml = comments
       .map((userComment, index) => {
+        // Заменяем маркеры на HTML-теги для отображения цитат
+        const commentText = userComment.comment
+          .replaceAll("QUOTE_BEGIN", "<div class='quote'>")
+          .replaceAll("QUOTE_END", "</div>");
         return `<li class="comment" data-index="${index}">
-        <div class="comment-header">
-          <div>${userComment.name}</div>
-          <div> ${userComment.time} </div>
-        </div>
-        <div class="comment-body">
-          <div class="comment-text">${userComment.comment}</div>
-        </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">${userComment.numLikes}</span>
-              <button class="like-button ${userComment.isLiked ? "-active-like" : ""}"  data-index='${index}'></button>
-            </div>
+      <div class="comment-header">
+        <div>${userComment.name}</div>
+        <div> ${userComment.time} </div>
+      </div>
+      <div class="comment-body">
+        <div class="comment-text">${commentText}</div>
+      </div>
+        <div class="comment-footer">
+          <div class="likes">
+            <span class="likes-counter">${userComment.numLikes}</span>
+            <button class="like-button ${userComment.isLiked ? "-active-like" : ""}"  data-index='${index}'></button>
           </div>
-        </li>`
+        </div>
+      </li>`
       }).join("");
 
     listEl.innerHTML = commentsHtml;
@@ -81,7 +85,7 @@
     document.querySelectorAll('.comment').forEach(commentEl => {
       commentEl.addEventListener('click', function () {
         const index = this.getAttribute('data-index');
-        textEl.value = `${comments[index].comment}\n\n${comments[index].name}, `; // Теперь заполняем поле ввода текстом комментария
+        textEl.value = `QUOTE_BEGIN ${comments[index].comment} QUOTE_END\n${comments[index].name}, `; // Теперь заполняем поле ввода текстом комментария
         updateButtonState(); // Обновляем состояние кнопки
       });
     });
@@ -122,7 +126,6 @@
       month: '2-digit',
       year: '2-digit'
     });
-
     // Форматируем время
     const formattedTime = date.toLocaleTimeString('ru-RU', {
       hour: '2-digit',
@@ -137,7 +140,11 @@
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;"),
-      comment: textEl.value,
+      comment: textEl.value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;"),
       time: formattedDate + formattedTime,
       numLikes: 0,
       isLiked: false,
